@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import styled from "react-emotion";
+
 import { getList } from "../actions/gallerieList";
 
 class Gallery extends Component {
@@ -8,12 +10,31 @@ class Gallery extends Component {
   }
 
   render() {
-    return <div>HEllo</div>;
+    const data = this.props.data;
+    console.log(data);
+    return (
+      <GlobalDiv>
+        {data &&
+          data.map(data => (
+            <ImgDiv key={data.id}>
+              {(data.images &&
+                data.images[0].animated && (
+                  <video preload="auto" autoPlay="autoplay" loop="loop">
+                    <source src={data.images[0].mp4} type="video/mp4" />
+                  </video>
+                )) ||
+                (data.images && (
+                  <img src={data.images[0].link} alt={data.title} />
+                )) || <img src={data.link} alt={data.title} />}
+            </ImgDiv>
+          ))}
+      </GlobalDiv>
+    );
   }
 }
 export default connect(
   state => ({
-    data: state
+    data: state.galleriesList
   }),
   dispatch => ({
     getData: () => {
@@ -21,3 +42,17 @@ export default connect(
     }
   })
 )(Gallery);
+
+const ImgDiv = styled("div")`
+  width: 200px;
+  & > img {
+    width: 200px;
+  }
+  & > video {
+    width: 200px;
+  }
+`;
+const GlobalDiv = styled("div")`
+  display: flex;
+  flex-wrap: wrap;
+`;
