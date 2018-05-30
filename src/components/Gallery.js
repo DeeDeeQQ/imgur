@@ -16,17 +16,24 @@ class Gallery extends Component {
       <GlobalDiv>
         {data &&
           data.map(data => (
-            <ImgDiv key={data.id}>
-              {(data.images &&
-                data.images[0].animated && (
-                  <video preload="auto" autoPlay="autoplay" loop="loop">
-                    <source src={data.images[0].mp4} type="video/mp4" />
-                  </video>
-                )) ||
-                (data.images && (
-                  <img src={data.images[0].link} alt={data.title} />
-                )) || <img src={data.link} alt={data.title} />}
-            </ImgDiv>
+            <PostDiv key={data.id}>
+              <ImgDiv>
+                {(data.images &&
+                  data.images[0].animated && (
+                    <video preload="auto" autoPlay="autoplay" loop="loop">
+                      <source src={data.images[0].mp4} type="video/mp4" />
+                    </video>
+                  )) ||
+                  (data.images && (
+                    <img src={data.images[0].link} alt={data.title} />
+                  )) || <img src={data.link} alt={data.title} />}
+              </ImgDiv>
+
+              <TitleDiv>
+                <p>{data.title}</p>
+                <span>Views: {data.views}</span>
+              </TitleDiv>
+            </PostDiv>
           ))}
       </GlobalDiv>
     );
@@ -43,16 +50,25 @@ export default connect(
   })
 )(Gallery);
 
-const ImgDiv = styled("div")`
-  width: 200px;
-  & > img {
-    width: 200px;
-  }
-  & > video {
-    width: 200px;
-  }
-`;
-const GlobalDiv = styled("div")`
-  display: flex;
-  flex-wrap: wrap;
-`;
+const PostDiv = /*#__PURE__*/ styled("div", {
+  target: "e25lwd50"
+})(
+  "display:flex;position:relative;flex-direction:column;flex:0 0 200px;margin:5px;border:1px solid #ccc;box-shadow:2px 2px 6px 0px rgba(0,0,0,0.3);justify-content:center;align-items:center;"
+);
+
+const ImgDiv = /*#__PURE__*/ styled("div", {
+  target: "e25lwd51"
+})(
+  "& > img{max-width:100%;max-height:250px;}& > video{width:200px;height:200px;}& > span{align-self:flex-end;}"
+);
+const TitleDiv = /*#__PURE__*/ styled("div", {
+  target: "e25lwd52"
+})(
+  "border:1px solid #cccccc;border-radius:1em;width:220px;justify-self:flex-end;display:none;padding:10px;background-color:#e6e6e6;top:100%;z-index:5;position:absolute;& > p{margin:0;}& > span{margin-top:5px;float:right;}",
+  PostDiv,
+  ":hover &{display:block;}"
+);
+
+const GlobalDiv = /*#__PURE__*/ styled("div", {
+  target: "e25lwd53"
+})("display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;");
