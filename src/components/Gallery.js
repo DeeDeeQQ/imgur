@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "react-emotion";
+import { Link } from "react-router-dom";
 
 import { getList } from "../actions/gallerieList";
 
@@ -17,18 +18,19 @@ class Gallery extends Component {
         {data &&
           data.map(data => (
             <PostDiv key={data.id}>
-              <ImgDiv>
-                {(data.images &&
-                  data.images[0].animated && (
-                    <video preload="auto" autoPlay="autoplay" loop="loop">
-                      <source src={data.images[0].mp4} type="video/mp4" />
-                    </video>
-                  )) ||
-                  (data.images && (
-                    <img src={data.images[0].link} alt={data.title} />
-                  )) || <img src={data.link} alt={data.title} />}
-              </ImgDiv>
-
+              <Link to={`/post/${data.id}`}>
+                <ImgDiv>
+                  {(data.images &&
+                    data.images[0].animated && (
+                      <video preload="auto" autoPlay="autoplay" loop="loop">
+                        <source src={data.images[0].mp4} type="video/mp4" />
+                      </video>
+                    )) ||
+                    (data.images && (
+                      <img src={data.images[0].link} alt={data.title} />
+                    )) || <img src={data.link} alt={data.title} />}
+                </ImgDiv>
+              </Link>
               <TitleDiv>
                 <p>{data.title}</p>
                 <span>Views: {data.views}</span>
@@ -51,18 +53,18 @@ export default connect(
 )(Gallery);
 
 const PostDiv = /*#__PURE__*/ styled("div", {
-  target: "e25lwd50"
+  target: "e2ccsqh0"
 })(
   "display:flex;position:relative;flex-direction:column;flex:0 0 200px;margin:5px;border:1px solid #ccc;box-shadow:2px 2px 6px 0px rgba(0,0,0,0.3);justify-content:center;align-items:center;"
 );
 
 const ImgDiv = /*#__PURE__*/ styled("div", {
-  target: "e25lwd51"
+  target: "e2ccsqh1"
 })(
   "& > img{max-width:100%;max-height:250px;}& > video{width:200px;height:200px;}& > span{align-self:flex-end;}"
 );
 const TitleDiv = /*#__PURE__*/ styled("div", {
-  target: "e25lwd52"
+  target: "e2ccsqh2"
 })(
   "border:1px solid #cccccc;border-radius:1em;width:220px;justify-self:flex-end;display:none;padding:10px;background-color:#e6e6e6;top:100%;z-index:5;position:absolute;& > p{margin:0;}& > span{margin-top:5px;float:right;}",
   PostDiv,
@@ -70,5 +72,5 @@ const TitleDiv = /*#__PURE__*/ styled("div", {
 );
 
 const GlobalDiv = /*#__PURE__*/ styled("div", {
-  target: "e25lwd53"
+  target: "e2ccsqh3"
 })("display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;");
