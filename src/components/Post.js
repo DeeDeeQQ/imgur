@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 import styled from "react-emotion";
+import isAnimated from "./../helpers/isAnimated";
+import isInserted from "./../helpers/isInserted";
 
 class Post extends Component {
   state = {
@@ -23,50 +25,28 @@ class Post extends Component {
 
   render() {
     const data = this.state.data;
+
     return (
       <div>
         {data ? (
           <div>
-            {console.log(data.type === "image/gif")}
-            {console.log(data)}
-            {((data.type === "image/gif" ||
-              data.images[0].type === "image/gif" ||
-              data.type === "video/mp4" ||
-              data.images[0].type === "video/mp4") && (
-              <div>
-                <h2>{data.title}</h2>
-                {((data.mp4 || data.images[0].mp4) && (
-                  <video preload="auto" controls="controls" loop="loop">
-                    <source
-                      src={data.mp4 || data.images[0].mp4}
-                      type="video/mp4"
-                    />
-                  </video>
-                )) || (
-                  <video preload="auto" controls="controls" loop="loop">
-                    <source src={data.gifv} type="video/mp4" />
-                  </video>
-                )}
-              </div>
-            )) ||
-              (data.type === "image/png" ||
-                (data.type === "image/jpeg" && (
-                  <div>
-                    <h2>data.title</h2>
-                    <img src={data.link} />
+            {data.title && <h2>{data.title}</h2>}
+            {isInserted(data)
+              ? data.images.map(image => (
+                  <div key={image.id}>
+                    {image.description && <h3>{image.description}</h3>}
+                    {(isAnimated(image) && (
+                      <video preload="auto" autoPlay="autoPlay" loop="loop">
+                        <source src={image.mp4} type="video/mp4" />
+                      </video>
+                    )) || <img src={image.link} alt={image.description} />}
                   </div>
-                ))) ||
-              (!data.type && (
-                <div>
-                  <h2>{data.title}</h2>
-                  {data.images.map(image => (
-                    <div key={image.id}>
-                      {image.description && <p>{image.description}</p>}
-                      <img src={image.link} />
-                    </div>
-                  ))}
-                </div>
-              ))}
+                ))
+              : (isAnimated(data) && (
+                  <video preload="auto" autoPlay="autoPlay" loop="loop">
+                    <source src={data.mp4} type="video/mp4" />
+                  </video>
+                )) || <img src={data.link} alt={data.title} />}
           </div>
         ) : (
           <div>Loading...</div>
