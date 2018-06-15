@@ -9,7 +9,7 @@ const App = props => (
   <Router basename={props.path}>
     <div>
       <Route exact path="/" component={Gallery} />
-      <Route path="/post" component={Post} />
+      <Route path="/post/:postId" component={Post} />
     </div>
   </Router>
 );

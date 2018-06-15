@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "react-emotion";
 import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 import { getList } from "../actions/gallerieList";
 
@@ -20,12 +21,17 @@ class Gallery extends Component {
             <PostDiv key={data.id}>
               <Link to={`/post/${data.id}`}>
                 <ImgDiv>
-                  {(data.images &&
-                    data.images[0].animated && (
-                      <video preload="auto" autoPlay="autoplay" loop="loop">
-                        <source src={data.images[0].mp4} type="video/mp4" />
-                      </video>
-                    )) ||
+                  {(data.animated && (
+                    <video preload="auto" controls="controls" loop="loop">
+                      <source src={data.mp4} type="video/mp4" />
+                    </video>
+                  )) ||
+                    (data.images &&
+                      data.images[0].animated && (
+                        <video preload="auto" controls="controls" loop="loop">
+                          <source src={data.images[0].mp4} type="video/mp4" />
+                        </video>
+                      )) ||
                     (data.images && (
                       <img src={data.images[0].link} alt={data.title} />
                     )) || <img src={data.link} alt={data.title} />}
@@ -50,7 +56,7 @@ export default connect(
       dispatch(getList());
     }
   })
-)(Gallery);
+)(withRouter(Gallery));
 
 const PostDiv = /*#__PURE__*/ styled("div", {
   target: "e2ccsqh0"
