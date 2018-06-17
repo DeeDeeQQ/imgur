@@ -5,17 +5,41 @@ import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 
 import { getList } from "../actions/gallerieList";
+import { Filter } from "../components/Filter";
 
 class Gallery extends Component {
+  state = {
+    section: "hot",
+    sort: "viral",
+    window: "day"
+  };
+
   componentWillMount() {
-    this.props.getData();
+    this.props.getData(this.state.section, this.state.sort, this.state.window);
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState !== this.state) {
+      this.props.getData(
+        this.state.section,
+        this.state.sort,
+        this.state.window
+      );
+    }
+  }
+
+  onFilterChange = value => {
+    this.setState(value);
+  };
 
   render() {
     const data = this.props.data;
-    console.log(data);
     return (
       <GlobalDiv>
+        <Filter
+          onChange={this.onFilterChange}
+          filterOptions={this.state.test}
+        />
         {data &&
           data.map(data => (
             <PostDiv key={data.id}>
@@ -52,8 +76,8 @@ export default connect(
     data: state.galleriesList
   }),
   dispatch => ({
-    getData: () => {
-      dispatch(getList());
+    getData: (section, sort, window) => {
+      dispatch(getList(section, sort, window));
     }
   })
 )(withRouter(Gallery));

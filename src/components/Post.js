@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import styled from "react-emotion";
+// import styled from "react-emotion";
 import isAnimated from "./../helpers/isAnimated";
 import isInserted from "./../helpers/isInserted";
 
