@@ -6,6 +6,7 @@ import { withRouter } from "react-router-dom";
 
 import { getList } from "../actions/gallerieList";
 import { Filter } from "../components/Filter";
+import { getTags } from "../actions/getTags";
 
 class Gallery extends Component {
   state = {
@@ -16,6 +17,7 @@ class Gallery extends Component {
 
   componentWillMount() {
     this.props.getData(this.state.section, this.state.sort, this.state.window);
+    this.props.getTags();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -34,31 +36,36 @@ class Gallery extends Component {
 
   render() {
     const data = this.props.data;
+    const tags = this.props.tags;
     return (
       <GlobalDiv>
         <Filter
           onChange={this.onFilterChange}
-          filterOptions={this.state.test}
+          filterSection={this.state.section}
+          tags={tags}
         />
         {data &&
           data.map(data => (
             <PostDiv key={data.id}>
               <Link to={`/post/${data.id}`}>
                 <ImgDiv>
-                  {(data.animated && (
-                    <video preload="auto" controls="controls" loop="loop">
-                      <source src={data.mp4} type="video/mp4" />
-                    </video>
-                  )) ||
+                  {(data.images &&
+                    data.images_count === 0 && <p>no image</p>) ||
+                    (data.animated && (
+                      <video preload="auto" controls="controls" loop="loop">
+                        <source src={data.mp4} type="video/mp4" />
+                      </video>
+                    )) ||
                     (data.images &&
                       data.images[0].animated && (
                         <video preload="auto" controls="controls" loop="loop">
                           <source src={data.images[0].mp4} type="video/mp4" />
                         </video>
                       )) ||
-                    (data.images && (
-                      <img src={data.images[0].link} alt={data.title} />
-                    )) || <img src={data.link} alt={data.title} />}
+                    (data.images &&
+                      data.images[0] && (
+                        <img src={data.images[0].link} alt={data.title} />
+                      )) || <img src={data.link} alt={data.title} />}
                 </ImgDiv>
               </Link>
               <TitleDiv>
@@ -73,11 +80,15 @@ class Gallery extends Component {
 }
 export default connect(
   state => ({
-    data: state.galleriesList
+    data: state.galleriesList,
+    tags: state.tags
   }),
   dispatch => ({
     getData: (section, sort, window) => {
       dispatch(getList(section, sort, window));
+    },
+    getTags: () => {
+      dispatch(getTags());
     }
   })
 )(withRouter(Gallery));
@@ -91,7 +102,7 @@ const PostDiv = /*#__PURE__*/ styled("div", {
 const ImgDiv = /*#__PURE__*/ styled("div", {
   target: "e2ccsqh1"
 })(
-  "& > img{max-width:100%;max-height:250px;}& > video{width:200px;height:200px;}& > span{align-self:flex-end;}"
+  "display:flex;width: 200px;height:250px;justify-content:center;& > img{max-width:100%;max-height:100%;margin:auto;}& > video{max-width:100%;max-height:100%;}& > span{align-self:flex-end;}"
 );
 const TitleDiv = /*#__PURE__*/ styled("div", {
   target: "e2ccsqh2"
