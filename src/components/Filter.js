@@ -20,19 +20,24 @@ const Select = ({ input, options }) => (
 );
 
 export const Filter = props => {
-  const { onChange, filterSection, tags } = props;
+  const { onChange, filterSection, tags, handleKeyPress } = props;
   return (
     <Form
       onSubmit={onSubmit}
       render={({ handleSubmit }) => (
         <FilterDiv>
-          {console.log(tags)}
           <Field
-            name="hashtag"
+            name="hashTag"
             items={tags}
             component={DownshiftInput}
             placeholder="#hashtag"
+            onKeyDown={handleKeyPress}
           />
+          <OnChange name="hashTag">
+            {hashTag => {
+              onChange({ tag: hashTag });
+            }}
+          </OnChange>
           <Field
             name="section"
             component={Select}

@@ -4,7 +4,14 @@ import matchSorter from "match-sorter";
 
 const itemToString = item => (item ? item : "");
 
-const DownshiftInput = ({ input, meta, placeholder, items, ...rest }) => (
+const DownshiftInput = ({
+  input,
+  meta,
+  placeholder,
+  items,
+  onKeyDown,
+  ...rest
+}) => (
   <Downshift
     {...input}
     onInputValueChange={inputValue => {
@@ -33,6 +40,7 @@ const DownshiftInput = ({ input, meta, placeholder, items, ...rest }) => (
               name: input.name,
               placeholder
             })}
+            onKeyDown={onKeyDown}
           />
           {isOpen &&
             !!filteredItems.length && (

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 
 import { getList } from "../actions/gallerieList";
+import { getListByTag } from "../actions/gallerieListByTag";
 import { Filter } from "../components/Filter";
 import { getTags } from "../actions/getTags";
 
@@ -12,7 +13,8 @@ class Gallery extends Component {
   state = {
     section: "hot",
     sort: "viral",
-    window: "day"
+    window: "day",
+    tag: ""
   };
 
   componentWillMount() {
@@ -34,6 +36,16 @@ class Gallery extends Component {
     this.setState(value);
   };
 
+  handleKeyPress = e => {
+    if (e.nativeEvent.keyCode === 13) {
+      this.props.getDataByTag(
+        this.state.tag,
+        this.state.sort,
+        this.state.window
+      );
+    }
+  };
+
   render() {
     const data = this.props.data;
     const tags = this.props.tags;
@@ -41,6 +53,7 @@ class Gallery extends Component {
       <GlobalDiv>
         <Filter
           onChange={this.onFilterChange}
+          handleKeyPress={this.handleKeyPress}
           filterSection={this.state.section}
           tags={tags}
         />
@@ -84,11 +97,14 @@ export default connect(
     tags: state.tags
   }),
   dispatch => ({
-    getData: (section, sort, window) => {
-      dispatch(getList(section, sort, window));
+    getData: (section, sort, window, tag) => {
+      dispatch(getList(section, sort, window, tag));
     },
     getTags: () => {
       dispatch(getTags());
+    },
+    getDataByTag: (tag, sort, window) => {
+      dispatch(getListByTag(tag, sort, window));
     }
   })
 )(withRouter(Gallery));
