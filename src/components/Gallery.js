@@ -24,11 +24,19 @@ class Gallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState !== this.state) {
-      this.props.getData(
-        this.state.section,
-        this.state.sort,
-        this.state.window
-      );
+      if (this.state.section !== "tag") {
+        this.props.getData(
+          this.state.section,
+          this.state.sort,
+          this.state.window
+        );
+      } else {
+        this.props.getDataByTag(
+          this.state.tag,
+          this.state.sort,
+          this.state.window
+        );
+      }
     }
   }
 
@@ -38,8 +46,9 @@ class Gallery extends Component {
 
   handleKeyPress = e => {
     if (e.nativeEvent.keyCode === 13) {
+      this.setState({ section: "tag", tag: e.target.value });
       this.props.getDataByTag(
-        this.state.tag,
+        e.target.value,
         this.state.sort,
         this.state.window
       );

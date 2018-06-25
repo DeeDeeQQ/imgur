@@ -7,6 +7,18 @@ import DownshiftInput from "./DownshiftInput";
 
 const onSubmit = value => {};
 
+const isShowSort = section => {
+  if (section === "user" || section === "tag") {
+    return true;
+  }
+};
+
+const isShowWindow = section => {
+  if (section === "top" || section === "tag") {
+    return true;
+  }
+};
+
 const Select = ({ input, options }) => (
   <div>
     <select {...input}>
@@ -33,11 +45,6 @@ export const Filter = props => {
             placeholder="#hashtag"
             onKeyDown={handleKeyPress}
           />
-          <OnChange name="hashTag">
-            {hashTag => {
-              onChange({ tag: hashTag });
-            }}
-          </OnChange>
           <Field
             name="section"
             component={Select}
@@ -49,10 +56,13 @@ export const Filter = props => {
           />
           <OnChange name="section">
             {section => {
-              onChange({ section: section });
+              onChange({
+                section: section,
+                tag: ""
+              });
             }}
           </OnChange>
-          {filterSection === "user" && (
+          {isShowSort(filterSection) && (
             <div>
               <Field
                 name="sort"
@@ -71,7 +81,7 @@ export const Filter = props => {
               </OnChange>
             </div>
           )}
-          {filterSection === "top" && (
+          {isShowWindow(filterSection) && (
             <div>
               <Field
                 name="window"
