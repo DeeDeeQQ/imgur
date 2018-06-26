@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+
 // import styled from "react-emotion";
 import isAnimated from "./../helpers/isAnimated";
 import isInserted from "./../helpers/isInserted";
@@ -28,6 +30,7 @@ class Post extends Component {
 
     return (
       <div>
+        <Link to="/">&larr;Back to lessons</Link>
         {data ? (
           <div>
             {data.title && <h2>{data.title}</h2>}

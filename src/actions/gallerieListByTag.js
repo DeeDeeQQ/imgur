@@ -11,11 +11,17 @@ export const getListByTag = (tag, sort, window) => dispatch => {
       authorization: "Client-ID 4983217019809fb"
     }
   }).then(response => {
-    response.json().then(data =>
-      dispatch({
-        type: "GET_NEW_IMAGES",
-        payload: data.data.items
-      })
-    );
+    response.json().then(data => {
+      if (data.success) {
+        dispatch({
+          type: "GET_NEW_IMAGES",
+          payload: data.data.items
+        });
+      } else {
+        dispatch({
+          type: "NO_DATA_RECIEVED"
+        });
+      }
+    });
   });
 };
