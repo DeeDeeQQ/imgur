@@ -57,8 +57,10 @@ export const Filter = props => {
           <OnChange name="section">
             {section => {
               onChange({
-                section: section,
-                tag: ""
+                filter: {
+                  section: section,
+                  tag: ""
+                }
               });
             }}
           </OnChange>
@@ -76,7 +78,7 @@ export const Filter = props => {
               />
               <OnChange name="sort">
                 {sort => {
-                  onChange({ sort: sort });
+                  onChange({ filter: { sort: sort } });
                 }}
               </OnChange>
             </div>
@@ -95,7 +97,7 @@ export const Filter = props => {
               />
               <OnChange name="window">
                 {window => {
-                  onChange({ window: window });
+                  onChange({ filter: { window: window } });
                 }}
               </OnChange>
             </div>

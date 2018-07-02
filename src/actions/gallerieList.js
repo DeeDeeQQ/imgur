@@ -1,8 +1,6 @@
 const API_URL = "https://api.imgur.com/3/gallery";
-const page = 0;
-export const getList = (section, sort, window) => dispatch => {
+export const getList = (section, sort, window, page = 0) => dispatch => {
   const url = `${API_URL}/${section}/${sort}/${window}/${page}?album_previews=true`;
-  console.log(1);
   fetch(url, {
     async: true,
     crossDomain: true,
@@ -13,13 +11,18 @@ export const getList = (section, sort, window) => dispatch => {
   }).then(response => {
     response.json().then(data => {
       if (data.success) {
-        dispatch({
-          type: "GET_NEW_IMAGES",
-          payload: data.data
-        });
+        page > 0
+          ? dispatch({
+              type: "GALLERY_NEXT_PAGE",
+              payload: data.data
+            })
+          : dispatch({
+              type: "GET_NEW_IMAGES",
+              payload: data.data
+            });
       } else {
         dispatch({
-          type: "NO_DATA_RECIEVED"
+          type: "NO_DATA_RECEIVED"
         });
       }
     });

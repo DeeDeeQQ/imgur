@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import styled from "react-emotion";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroller";
 
 import { getList } from "../actions/gallerieList";
 import { getListByTag } from "../actions/gallerieListByTag";
@@ -11,92 +12,140 @@ import { getTags } from "../actions/getTags";
 
 class Gallery extends Component {
   state = {
-    section: "hot",
-    sort: "viral",
-    window: "day",
-    tag: ""
+    filter: {
+      section: "hot",
+      sort: "viral",
+      window: "day",
+      tag: ""
+    },
+    isLoading: false,
+    page: 0,
+    dataId: {}
   };
 
   componentWillMount() {
-    this.props.getData(this.state.section, this.state.sort, this.state.window);
+    this.props.getData(
+      this.state.filter.section,
+      this.state.filter.sort,
+      this.state.filter.window
+    );
     this.props.getTags();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState !== this.state) {
-      if (this.state.section !== "tag") {
+    if (prevState.filter !== this.state.filter) {
+      if (this.state.filter.section !== "tag") {
         this.props.getData(
-          this.state.section,
-          this.state.sort,
-          this.state.window
+          this.state.filter.section,
+          this.state.filter.sort,
+          this.state.filter.window
         );
       } else {
         this.props.getDataByTag(
-          this.state.tag,
-          this.state.sort,
-          this.state.window
+          this.state.filter.tag,
+          this.state.filter.sort,
+          this.state.filter.window
         );
       }
+    }
+    if (prevProps.data !== this.props.data) {
+      this.setState({ isLoading: false });
     }
   }
 
   onFilterChange = value => {
+    this.setState({ page: 0 });
     this.setState(value);
   };
 
   handleKeyPress = e => {
     if (e.nativeEvent.keyCode === 13) {
-      this.setState({ section: "tag", tag: e.target.value });
+      this.setState({ filter: { section: "tag", tag: e.target.value } });
       this.props.getDataByTag(
         e.target.value,
-        this.state.sort,
-        this.state.window
+        this.state.filter.sort,
+        this.state.filter.window
       );
     }
+  };
+
+  handleLoadMore = () => {
+    this.setState({
+      isLoading: true,
+      page: +this.state.page + 1
+    });
+    if (this.state.filter.section !== "tag") {
+      this.props.getData(
+        this.state.filter.section,
+        this.state.filter.sort,
+        this.state.filter.window,
+        this.state.page
+      );
+    } else {
+      this.props.getDataByTag(
+        this.state.filter.tag,
+        this.state.filter.sort,
+        this.state.filter.window,
+        this.state.page
+      );
+    }
+    console.log(this.state.page);
   };
 
   render() {
     const data = this.props.data;
     const tags = this.props.tags;
     return (
-      <GlobalDiv>
-        <Filter
-          onChange={this.onFilterChange}
-          handleKeyPress={this.handleKeyPress}
-          filterSection={this.state.section}
-          tags={tags}
-        />
-        {data &&
-          data.map(data => (
-            <PostDiv key={data.id}>
-              <Link to={`/post/${data.id}`}>
-                <ImgDiv>
-                  {(data.images &&
-                    data.images_count === 0 && <p>no image</p>) ||
-                    (data.animated && (
-                      <video preload="auto" controls="controls" loop="loop">
-                        <source src={data.mp4} type="video/mp4" />
-                      </video>
-                    )) ||
-                    (data.images &&
-                      data.images[0].animated && (
+      <InfiniteScroll
+        pageStart={0}
+        initialLoad={false}
+        loadMore={this.handleLoadMore}
+        hasMore={!this.state.isLoading}
+        loader={
+          <div className="loader" key={0}>
+            Loading ...
+          </div>
+        }
+      >
+        <GlobalDiv>
+          <Filter
+            onChange={this.onFilterChange}
+            handleKeyPress={this.handleKeyPress}
+            filterSection={this.state.filter.section}
+            tags={tags}
+          />
+          {data &&
+            data.map(data => (
+              <PostDiv key={data.id}>
+                <Link to={`/post/${data.id}`}>
+                  <ImgDiv>
+                    {(data.images &&
+                      data.images_count === 0 && <p>no image</p>) ||
+                      (data.animated && (
                         <video preload="auto" controls="controls" loop="loop">
-                          <source src={data.images[0].mp4} type="video/mp4" />
+                          <source src={data.mp4} type="video/mp4" />
                         </video>
                       )) ||
-                    (data.images &&
-                      data.images[0] && (
-                        <img src={data.images[0].link} alt={data.title} />
-                      )) || <img src={data.link} alt={data.title} />}
-                </ImgDiv>
-              </Link>
-              <TitleDiv>
-                <p>{data.title}</p>
-                <span>Views: {data.views}</span>
-              </TitleDiv>
-            </PostDiv>
-          ))}
-      </GlobalDiv>
+                      (data.images &&
+                        data.images[0].animated && (
+                          <video preload="auto" controls="controls" loop="loop">
+                            <source src={data.images[0].mp4} type="video/mp4" />
+                          </video>
+                        )) ||
+                      (data.images &&
+                        data.images[0] && (
+                          <img src={data.images[0].link} alt={data.title} />
+                        )) || <img src={data.link} alt={data.title} />}
+                  </ImgDiv>
+                </Link>
+                <TitleDiv>
+                  <p>{data.title}</p>
+                  <span>Views: {data.views}</span>
+                </TitleDiv>
+              </PostDiv>
+            ))}
+        </GlobalDiv>
+      </InfiniteScroll>
     );
   }
 }
@@ -106,14 +155,14 @@ export default connect(
     tags: state.tags
   }),
   dispatch => ({
-    getData: (section, sort, window, tag) => {
-      dispatch(getList(section, sort, window, tag));
+    getData: (section, sort, window, tag, page) => {
+      dispatch(getList(section, sort, window, tag, page));
     },
     getTags: () => {
       dispatch(getTags());
     },
-    getDataByTag: (tag, sort, window) => {
-      dispatch(getListByTag(tag, sort, window));
+    getDataByTag: (tag, sort, window, page) => {
+      dispatch(getListByTag(tag, sort, window, page));
     }
   })
 )(withRouter(Gallery));

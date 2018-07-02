@@ -1,6 +1,5 @@
 const API_URL = "https://api.imgur.com/3/gallery/t";
-const page = 0;
-export const getListByTag = (tag, sort, window) => dispatch => {
+export const getListByTag = (tag, sort, window, page = 0) => dispatch => {
   const url = `${API_URL}/${tag}/${sort}/${window}/${page}`;
   console.log(url);
   fetch(url, {
@@ -13,10 +12,15 @@ export const getListByTag = (tag, sort, window) => dispatch => {
   }).then(response => {
     response.json().then(data => {
       if (data.success) {
-        dispatch({
-          type: "GET_NEW_IMAGES",
-          payload: data.data.items
-        });
+        page > 0
+          ? dispatch({
+              type: "GALLERY_NEXT_PAGE",
+              payload: data.data.items
+            })
+          : dispatch({
+              type: "GET_NEW_IMAGES",
+              payload: data.data.items
+            });
       } else {
         dispatch({
           type: "NO_DATA_RECIEVED"

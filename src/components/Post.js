@@ -30,7 +30,7 @@ class Post extends Component {
 
     return (
       <div>
-        <Link to="/">&larr;Back to lessons</Link>
+        <Link to="/">&larr; Go back</Link>
         {data ? (
           <div>
             {data.title && <h2>{data.title}</h2>}
